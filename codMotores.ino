@@ -116,37 +116,27 @@ void loop() {
   S5Val = analogRead(pino_S5);  //sensor extrema direita (amarelo)
 
   //testeMotor(100);
-  // testeSensor(S1Val, S2Val, S3Val, S4Val, S5Val);
+  //testeSensor(S1Val, S2Val, S3Val, S4Val, S5Val);
+  //S4 com problema (menos que 600 ta no branco)
 
-  //if (S1Val >= pisoPreto && S5Val >= pisoPreto && S3Val < pisoPreto || S2Val < pisoPreto || S4Val < pisoPreto) { //pra frente
-  if(S3Val < pisoPreto && S2Val >= pisoPreto && S4Val >= pisoPreto){
-
-    Serial.print("\nS3: ");
-    Serial.print(S3Val);
-
-    Serial.print("\nS2: ");
-    Serial.print(S2Val);
-
-    Serial.print("\nS4: ");
-    Serial.print(S4Val);
-    moveFrente(100);
+  if (S2Val >= pisoPreto && S3Val < pisoPreto && S4Val >= 600) { 
+    moveFrente(180);
     ultimoMov = 0;
-
-  } else if (S4Val < pisoPreto) { //direita
-
-    Serial.print("\n Virando direita pouco S4: ");
+  } else if (S2Val < pisoPreto && S3Val >= pisoPreto && S4Val >= 600) {
     moveDireitaPouco(100);
-    delay(2000);
-
-  } else if (S2Val < pisoPreto) { //esquerda
-    
-    Serial.print("\n Virando esquerda pouco S2: ");
+    //delay(1000);
+  } else if (S4Val< 600 && S2Val >= pisoPreto && S3Val >= pisoPreto) {
     moveEsquerdaPouco(100);
+   // delay(1000);
+  } else if (S1Val < pisoPreto || S2Val < pisoPreto ) {  //direita
+    moveEsquerdaPouco(120);
+    //delay(1000);
+  } else if (S4Val < 600 || S5Val < pisoPreto && S3Val >= pisoPreto) {  //esquerda
+    moveEsquerdaPouco(120);
 
   } else {
 
     paraCarro();
-
   }
 
 
