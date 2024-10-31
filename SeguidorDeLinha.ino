@@ -1,215 +1,214 @@
-// /*// Mapeamento de Pinos
+#define pino_S1 A1  //sensor extrema esquerda (verde)
+#define pino_S2 A2  //sensor esquerda (roxo)
+#define pino_S3 A3  //sensor meio (azul)
+#define pino_S4 A4  //sensor direita (branco)
+#define pino_S5 A5  //sensor extema direita (amarelo)
 
-// // Motor Direita
-// #define pino_enableDIR   5
-// #define pino_motorDIR_A  6
-// #define pino_motorDIR_B  7
-
-// // Motor Esquerda
-// #define pino_enableESQ   10
-// #define pino_motorESQ_A  9
-// #define pino_motorESQ_B  8
-
-// // Sensores Infravermelho
-// #define pino_S1 A4
-// #define pino_S2 A3
-// #define pino_S3 A2
-// #define pino_S4 A1
-// #define pino_S5 A0
-
-// // Variáveis
-
-// // Variáveis de leitura dos sensores infravermelho
-// int S1Val = 0;
-// int S2Val = 0;
-// int S3Val = 0;
-// int S4Val = 0;
-// int S5Val = 0;
-
-// // Variáveis de velocidade do motor
-// // Estas variáveis podem ser configuradas para um valor mais adequado conforme o seu robô for sendo testado
-// const int velMAX = 220;
-// const int velMED = 170;
-// const int velBAIXA = 120;
-
-// // Variáveis de base de leitura do sensor infravermelho
-// /* Ajustar estes valores conforme a leitura feita com os seus sensores. 
-//   IMPORTANTE: 
-//   - O valor de preto tem que ser um pouco menor do que a menor medida dos sensores no piso preto
-//   - O valor de branco tem que ser um pouco maior do que a maior medida dos sensores no piso branco
-// */
-// int pisoBranco = 70;
-// int pisoPreto = 400;
-
-// // Variáveis de apoio do Loop
-// int contPisoPreto = 0;
-// int ultimoMov = 0;
-
-// void setup()
-// {
-//   // Configura Pinos dos Motores como saída
-//   pinMode(pino_enableDIR, OUTPUT);
-//   pinMode(pino_enableESQ, OUTPUT);
-//   pinMode(pino_motorDIR_A, OUTPUT);
-//   pinMode(pino_motorDIR_B, OUTPUT);
-//   pinMode(pino_motorESQ_A, OUTPUT);
-//   pinMode(pino_motorESQ_B, OUTPUT);
-
-//   // Debug
-//   Serial.begin(9600);
-// }
+void testeMotor(int);
+void testeSensor(int, int, int);
+void paraCarro();
+void moveFrente(int);
+void moveDireitaMuito(int);
+void moveEsquerdaMuito(int);
+void moveEsquerdaPouco(int);
+void moveDireitaPouco(int);
 
 
-// void loop()
-// {
+//Definicoes pinos Arduino ligados a entrada da Ponte H
+int IN1 = 4;  //Direito horario
+int IN2 = 3;  //Direito ante-horario
+int IN3 = 7;  //Esquerdo horario
+int IN4 = 8;  //Esquerdo ante-horario
 
-//   // leitura dos sensores
-//   S1Val = analogRead(pino_S1);
-//   S2Val = analogRead(pino_S2);
-//   S3Val = analogRead(pino_S3);
-//   S4Val = analogRead(pino_S4);
-//   S5Val = analogRead(pino_S5);
-//   /*
-//    // PARA FAZER CALIBRAÇÃO DOS SENSORES REMOVA O TAG DE COMENTÁRIO ACIMA E ABAIXO 
-//    // DESSE BLOCO E COLOQUE COMO COMO COMENTÁRIO O RESTO DO PROGRAMA ABAIXO 
-//    // (MANTENHA A LEITURA DOS SENSORES SOMENTE)
-//     Serial.print("S1: ");
-//     Serial.print(S1Val);
-//     Serial.print(" S2: ");
-//     Serial.print(S2Val);
-//     Serial.print(" S3: ");
-//     Serial.print(S3Val);
-//     Serial.print(" S4: ");
-//     Serial.print(S4Val);
-//     Serial.print(" S5: ");
-//     Serial.println(S5Val);
+int ENA = 6;  //Enable de motor direito
+int ENB = 5;  //Enable de motor esquerdo
 
-//   */
+int S1Val = 0;
+int S2Val = 0;
+int S3Val = 0;
+int S4Val = 0;
+int S5Val = 0;
 
-//   // Lógicas de verificação de qual sensor está "vendo" a faixa preta
-//   // Aplica o movimento correto e registra qual foi esse movimento realizado
-//   if ( S1Val <= pisoPreto && S2Val <= pisoPreto && S3Val >= pisoBranco && S4Val <= pisoPreto && S5Val <= pisoPreto) {
-//     moveFrente(velMAX);
-//     ultimoMov = 0;
-//   } else {
-//     if ( S2Val >= pisoBranco) {
-//       moveEsquerdaPouco(velMED);
-//       ultimoMov = 1;
-//     } else {
-//       if ( S4Val >= pisoBranco) {
-//         moveDireitaPouco(velMED);
-//         ultimoMov = 2;
-//       } else {
-//         if ( S1Val >= pisoBranco) {
-//           moveEsquerdaMuito(velBAIXA);
-//           ultimoMov = 3;
-//         } else {
-//           if ( S5Val >= pisoBranco) {
-//             moveDireitaMuito(velBAIXA);
-//             ultimoMov = 4;
-//           }
-//         }
-//       }
-//     }
-//   }
+int pisoPreto = 0;
 
-//   // Caso esteja todos no piso branco:
-//   if ( S1Val <= pisoPreto && S2Val <= pisoPreto && S3Val <= pisoPreto && S4Val <= pisoPreto && S5Val <= pisoPreto) {
-//     if (contPisoPreto > 30) {
-//       paraCarro();    // para o carro caso estourou o contador
-//     } else {
-//       contPisoPreto++;   // incrementa contador e aplica último movimento feito antes do piso todo branco
-//       switch (ultimoMov) {
-//         case 0:
-//           moveFrente(velMAX);
-//           break;
-//         case 1:
-//           moveEsquerdaPouco(velMED);
-//           break;
-//         case 2:
-//           moveDireitaPouco(velMED);
-//           break;
-//         case 3:
-//           moveEsquerdaMuito(velBAIXA);
-//           break;
-//         case 4:
-//           moveDireitaMuito(velBAIXA);
-//           break;
-//       }
-//     }
-//   } else {
-//     contPisoPreto = 0;   // Zera contador
-//   }
+// Variáveis de apoio do Loop
+int contPisoPreto = 0;
+int ultimoMov = 0;
 
-//   // Delay do Loop todo
-//   // AJUSTAR ESSE VALOR CASO LOOP ESTEJA RÁPIDO DEMAIS
-//   delay(30);
+void setup() {
+  // Define os pinos como saida
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
 
-// }
+  pinMode(ENA, OUTPUT);
+  pinMode(ENB, OUTPUT);
 
+  Serial.begin(9600);
+}
 
-// /*
-//    FUNÇÕES DE MOVIMENTO DO CARRO
-// */
+void loop() {
 
-// void moveFrente (int vel) {
-//   digitalWrite(pino_motorESQ_A, HIGH);
-//   digitalWrite(pino_motorESQ_B, LOW);
-//   analogWrite(pino_enableESQ, vel);
+  pisoPreto = 200;
 
-//   digitalWrite(pino_motorDIR_A, HIGH);
-//   digitalWrite(pino_motorDIR_B, LOW);
-//   analogWrite(pino_enableDIR, vel);
-// }
+  S1Val = analogRead(pino_S1);  //sensor extrema esquerdo (verde)
+  S2Val = analogRead(pino_S2);  //sensor esquerda (roxo)
+  S3Val = analogRead(pino_S3);  //sensor meio (azul)
+  S4Val = analogRead(pino_S4);  //sensor direita (branco)
+  S5Val = analogRead(pino_S5);  //sensor extrema direita (amarelo)
 
-// void moveDireitaPouco (int vel) {
-//   digitalWrite(pino_motorESQ_A, HIGH);
-//   digitalWrite(pino_motorESQ_B, LOW);
-//   analogWrite(pino_enableESQ, vel);
+  // testeMotor(255);
+  //testeSensor(S1Val, S2Val, S3Val, S4Val, S5Val);
 
-//   digitalWrite(pino_motorDIR_A, HIGH);
-//   digitalWrite(pino_motorDIR_B, LOW);
-//   analogWrite(pino_enableDIR, vel / 2);
-// }
+  // S4 com problema (menos que 600 ta no branco)
 
-// void moveEsquerdaPouco (int vel) {
-//   digitalWrite(pino_motorESQ_A, HIGH);
-//   digitalWrite(pino_motorESQ_B, LOW);
-//   analogWrite(pino_enableESQ, vel / 2);
+  if (S2Val >= pisoPreto && S3Val < pisoPreto && S4Val >= 600) {
+    //Sensor do meio agora esta no branco.
+    moveFrente(180);
+    ultimoMov = 0;
+  } else if (S2Val < pisoPreto && S3Val >= pisoPreto && S4Val >= 600) {
+    //Sensor da esquerda (roxo) está no branco.
+    moveDireitaPouco(120);
+    ultimoMov = 2;
+    //delay(1000);
+  } else if (S4Val < 600 && S2Val >= pisoPreto && S3Val >= pisoPreto) {
+    //Sensor da direita (branco) está no branco.
+    moveEsquerdaPouco(120);
+    ultimoMov = 1;
+    //delay(1000);
+  } else if (S1Val < pisoPreto || S2Val < pisoPreto) {  //direita
+    //Sensor da direita (vermelho) está no branco.
+    moveEsquerdaPouco(160);
+    ultimoMov = 4;
+    //delay(1000);
+  } else if (S4Val < 600 || S5Val < pisoPreto && S3Val >= pisoPreto) {
+    //Sensor da esquerda (verde) está na no branco.S
+    moveDireitaPouco(160);
+    ultimoMov = 3;
+  } /*else {
+    //Todos os sensores estão no preto.
+    paraCarro();
+  }*/
 
-//   digitalWrite(pino_motorDIR_A, HIGH);
-//   digitalWrite(pino_motorDIR_B, LOW);
-//   analogWrite(pino_enableDIR, vel);
-// }
+  // Caso esteja todos no piso preto:
+  if (S1Val >= pisoPreto && S2Val >= pisoPreto && S3Val >= pisoPreto && S4Val >= 600 && S5Val >= pisoPreto) {
+    if (contPisoPreto > 30) {
+      paraCarro();  // para o carro caso estourou o contador
+    } else {
+      //contPisoPreto++;  // incrementa contador e aplica último movimento feito antes do piso todo preto
+      switch (ultimoMov) {
+        case 0:
+          moveFrente(200);
+          break;
+        case 1:
+          moveEsquerdaPouco(120);
+          break;
+        case 2:
+          moveDireitaPouco(120);
+          break;
+        case 3:
+          moveEsquerdaPouco(200);
+          break;
+        case 4:
+          moveDireitaPouco(200);
+          break;
+      }
+    }
+  } /*else {
+    contPisoPreto = 0;  // Zera contador
+  }*/
 
-// void moveDireitaMuito (int vel) {
-//   digitalWrite(pino_motorESQ_A, HIGH);
-//   digitalWrite(pino_motorESQ_B, LOW);
-//   analogWrite(pino_enableESQ, vel);
+  // Caso esteja todos no piso branco:
+  if (S1Val <= pisoPreto && S2Val <= pisoPreto && S3Val <= pisoPreto && S4Val <= 600 && S5Val <= pisoPreto) {
+    moveFrente(180);
+  } 
+}
 
-//   digitalWrite(pino_motorDIR_A, LOW);
-//   digitalWrite(pino_motorDIR_B, LOW);
-//   analogWrite(pino_enableDIR, vel);
-// }
+void testeSensor(int S1Val, int S2Val, int S3Val, int S4Val, int S5Val) {
 
-// void moveEsquerdaMuito (int vel) {
-//   digitalWrite(pino_motorESQ_A, LOW);
-//   digitalWrite(pino_motorESQ_B, LOW);
-//   analogWrite(pino_enableESQ, vel);
+  Serial.print("\nS1: ");
+  Serial.print(S1Val);
 
-//   digitalWrite(pino_motorDIR_A, HIGH);
-//   digitalWrite(pino_motorDIR_B, LOW);
-//   analogWrite(pino_enableDIR, vel);
-// }
+  Serial.print(" S2: ");
+  Serial.print(S2Val);
 
-// void paraCarro() {
-//   digitalWrite(pino_motorESQ_A, LOW);
-//   digitalWrite(pino_motorESQ_B, LOW);
-//   analogWrite(pino_enableESQ, 0);
+  Serial.print(" S3: ");
+  Serial.print(S3Val);
 
-//   digitalWrite(pino_motorDIR_A, LOW);
-//   digitalWrite(pino_motorDIR_B, LOW);
-//   analogWrite(pino_enableDIR, 0);
-// }
+  Serial.print(" S4: ");
+  Serial.print(S4Val);
 
+  Serial.print(" S5: ");
+  Serial.print(S5Val);
 
+  delay(3000);
+}
+
+void testeMotor(int velocidade) {
+  //Teste para ver se o motor está funcionando
+  digitalWrite(IN1, HIGH);  //Motor Esquerdo
+  digitalWrite(IN3, HIGH);  //Motor direito
+  analogWrite(ENA, velocidade);
+  analogWrite(ENB, velocidade);
+}
+
+void paraCarro() {
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, LOW);
+  analogWrite(ENB, 0);
+
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+  analogWrite(ENA, 0);
+}
+
+void moveFrente(int velocidade) {
+  //motor direito movimenta para frente
+  digitalWrite(IN3, HIGH);
+  //motor esquerdo se moviemnta para frente
+  digitalWrite(IN1, HIGH);
+
+  analogWrite(ENA, velocidade);
+  analogWrite(ENB, velocidade);
+}
+
+void moveDireitaPouco(int velocidade) {
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+  analogWrite(ENB, velocidade);
+
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  analogWrite(ENA, velocidade / 2);
+}
+
+void moveEsquerdaPouco(int velocidade) {
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+  analogWrite(ENB, velocidade / 2);
+
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  analogWrite(ENA, velocidade);
+}
+
+void moveDireitaMuito(int velBAIXA) {
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+  analogWrite(ENB, velBAIXA);
+
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  analogWrite(ENA, velBAIXA);
+}
+
+void moveEsquerdaMuito(int velBAIXA) {
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+  analogWrite(ENB, velBAIXA);
+
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  analogWrite(ENA, velBAIXA);
+}
